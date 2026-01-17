@@ -101,14 +101,35 @@ mainAudio.addEventListener("timeupdate", (e) => {
   musicCurrentTime.innerText = `${currentMin}:${currentSec}`;
 });
 
-progressArea.addEventListener("click", (e) => {
+let isDragging = false;
+
+function setProgress(e) {
   let progressWidth = progressArea.clientWidth;
   let clickedOffsetX = e.offsetX;
   let songDuration = mainAudio.duration;
+  
+  if (songDuration) {
+    mainAudio.currentTime = (clickedOffsetX / progressWidth) * songDuration;
+  }
+}
 
-  mainAudio.currentTime = (clickedOffsetX / progressWidth) * songDuration;
-  playMusic();
-  playingSong();
+progressArea.addEventListener('mousedown', (e) => {
+  isDragging = true;
+  setProgress(e);
+});
+
+progressArea.addEventListener('mousemove', (e) => {
+  if (isDragging) {
+    setProgress(e);
+  }
+});
+
+document.addEventListener('mouseup', (e) => {
+  if (isDragging) {
+    playMusic();
+    playingSong();
+    isDragging = false;
+  }
 });
 
 const repeatBtn = wrapper.querySelector("#repeat-plist");
